@@ -1,0 +1,12 @@
+target/
+.mvn/wrapper/maven-wrapper.jar
+*.class
+.idea/
+*.iml
+.vscode/
+.env
+deploy/certs/*.pem
+deploy/certs/*.p12
+deploy/certs/*.srl
+!deploy/certs/.gitkeep
+*.pem

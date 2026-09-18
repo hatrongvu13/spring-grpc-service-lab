@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package servicelab.pricing.v1;
+
+import "servicelab/common/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.htv.proto.pricing.v1";
+
+// Tang cuoi cua chuoi goi. dispatch-service la client cua service nay.
+service PricingService {
+  rpc QuotePrice(QuotePriceRequest) returns (QuotePriceResponse);
+}
+
+message QuotePriceRequest {
+  servicelab.common.v1.GeoPoint origin = 1;
+  servicelab.common.v1.GeoPoint destination = 2;
+  double weight_kg = 3;
+}
+
+message QuotePriceResponse {
+  int64 amount_minor = 1;
+  string currency = 2;
+  // Danh dau ro khi gia den tu fallback thay vi tinh that.
+  // Fallback im lang tra du lieu sai te hon la bao loi.
+  bool from_fallback = 3;
+}

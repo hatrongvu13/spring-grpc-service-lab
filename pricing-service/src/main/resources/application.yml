@@ -1,0 +1,73 @@
+spring:
+  application:
+    name: pricing-service
+  datasource:
+    url: jdbc:h2:mem:pricing;MODE=PostgreSQL
+    username: sa
+    jpa.hibernate.ddl-auto: update
+  grpc:
+    server:
+      enabled: true
+      address: 0.0.0.0
+      port: 9092
+
+      ssl:
+        # Giai đoạn 4 sẽ chuyển sang SSL bundle hoặc mTLS.
+        enabled: false
+
+      shutdown:
+        grace-period: 10s
+
+      keepalive:
+        time: 30s
+        timeout: 10s
+
+    client:
+      channel:
+        telemetry:
+          target: static://localhost:9093
+
+          ssl:
+            # Giai đoạn local development dùng plaintext.
+            enabled: false
+
+          default:
+            deadline: 900ms
+
+server:
+  # HTTP port dành cho Actuator.
+  port: 8092
+
+service-lab:
+  grpc:
+    service-name: pricing-service
+
+    ping:
+      # Pricing forward ping xuong telemetry (telemetry de mo, khong token).
+      next-hop: telemetry
+      per-hop-timeout-ms: 700
+
+  security:
+    enabled: true
+
+    audience: pricing-service
+
+    trusted-issuers:
+      - edge-gateway
+      - dispatch-service
+
+    verification-key-location: classpath:keys/internal-public.pem
+
+    clock-skew: 30s
+    deny-unmapped-methods: true
+
+    public-services:
+      - grpc.health.v1.Health
+
+    authorization:
+      "[servicelab.ping.v1.PingService/Ping]":
+        - ping:execute
+
+      "[servicelab.pricing.v1.PricingService/QuotePrice]":
+        - pricing:quote
+    propagate-security-context: true

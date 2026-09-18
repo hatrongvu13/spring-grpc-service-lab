@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  contract:
+    name: Kiem tra hop dong proto
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      # GIAI DOAN 2: bat buf breaking de chan thay doi pha vo tuong thich.
+      - uses: bufbuild/buf-action@v1
+        with:
+          input: proto-contracts/src/main/proto
+          lint: true
+          breaking: false
+
+  build:
+    name: Build va test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17', cache: maven }
+      - run: ./mvnw -B verify

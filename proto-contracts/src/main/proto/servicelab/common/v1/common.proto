@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package servicelab.common.v1;
+
+option java_multiple_files = true;
+option java_package = "com.htv.proto.common.v1";
+
+message GeoPoint {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+// Chi tiet loi nghiep vu, dinh kem vao google.rpc.Status lam detail
+message BusinessError {
+  string code = 1;
+  string message = 2;
+  map<string, string> metadata = 3;
+}

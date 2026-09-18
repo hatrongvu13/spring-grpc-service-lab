@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: telemetry-service
+  datasource:
+    url: jdbc:h2:mem:telemetry;MODE=PostgreSQL
+    username: sa
+    jpa.hibernate.ddl-auto: update
+  grpc:
+    server:
+      enabled: true
+      address: 0.0.0.0
+      port: 9093
+
+      ssl:
+        # Giai đoạn 4:
+        # đổi thành enabled=true và cấu hình SSL bundle/mTLS.
+        enabled: false
+
+      shutdown:
+        grace-period: 15s
+
+      keepalive:
+        # Telemetry có streaming dài, nên keepalive dài hơn.
+        time: 60s
+        timeout: 15s
+
+  # Telemetry không gọi service downstream.
+  # Không cần khai báo grpc.client rỗng.
+
+server:
+  # HTTP port dành cho Actuator.
+  port: 8093
+
+service-lab:
+  grpc:
+    service-name: telemetry-service
+
+    ping:
+      # Điểm cuối của chained ping.
+      next-hop:
+      per-hop-timeout-ms: 500
+
+    default-deadline-ms: 1000
+    minimum-remaining-ms: 100
+
+  security:
+    enabled: false
+    audience: telemetry-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - prometheus
+
+  endpoint:
+    health:
+      show-details: always

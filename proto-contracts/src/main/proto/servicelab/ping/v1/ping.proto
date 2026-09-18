@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package servicelab.ping.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "com.htv.proto.ping.v1";
+
+//   edge-gateway -> dispatch -> pricing -> telemetry
+service PingService {
+  rpc Ping(PingRequest) returns (PingResponse);
+}
+
+message PingRequest {
+  // Ten thanh phan goi den, chi dung de hien thi trong trace.
+  string from = 1;
+
+  // Chuoi ngau nhien do gateway sinh, phai quay ve nguyen ven.
+  string nonce = 2;
+
+  // So chang con duoc phep di tiep. Moi service giam 1 truoc khi
+  // chuyen tiep. Bang 0 thi dung lai. Day la chot chan vong lap khi
+  // ban cau hinh next-hop tao thanh chu trinh.
+  int32 hops_remaining = 3;
+}
+
+message PingResponse {
+  // Ten service tra loi truc tiep.
+  string from = 1;
+
+  string nonce = 2;
+
+  // Moi chang noi them mot dong: "<service>@<host>:<port> in <n>ms".
+  // Doc tu duoi len se thay duong di thuc te cua request.
+  repeated string trace = 3;
+
+  google.protobuf.Timestamp answered_at = 4;
+}

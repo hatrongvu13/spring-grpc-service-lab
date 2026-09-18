@@ -1,0 +1,2 @@
+com.htv.commons.grpc.autoconfigure.ServiceLabGrpcClientAutoConfiguration
+com.htv.commons.grpc.autoconfigure.ServiceLabGrpcServerAutoConfiguration

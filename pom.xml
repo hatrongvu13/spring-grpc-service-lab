@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+             http://maven.apache.org/POM/4.0.0
+             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>4.1.1</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.htv</groupId>
+  <artifactId>spring-grpc-service-lab</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>spring-grpc-service-lab</name>
+  <description>Spring Boot and Spring gRPC multi-module laboratory project</description>
+
+  <modules>
+    <module>proto-contracts</module>
+    <module>telemetry-service</module>
+    <module>grpc-commons</module>
+    <module>security-commons</module>
+    <module>dispatch-service</module>
+    <module>edge-gateway</module>
+    <module>pricing-service</module>
+  </modules>
+
+  <properties>
+    <!-- Java -->
+    <java.version>17</java.version>
+    <maven.compiler.release>17</maven.compiler.release>
+
+    <!-- Project encoding -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <!-- Spring gRPC -->
+    <spring-grpc.version>1.1.1</spring-grpc.version>
+
+    <!-- gRPC and Protocol Buffers -->
+    <grpc.version>1.84.0</grpc.version>
+    <protobuf.version>4.36.1</protobuf.version>
+
+    <!-- Build plugins -->
+    <protobuf-maven-plugin.version>5.1.9</protobuf-maven-plugin.version>
+    <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+
+    <resilience4j.version>2.4.0</resilience4j.version>
+
+    <nimbus-jose.version>9.40</nimbus-jose.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Spring gRPC dependency management -->
+      <dependency>
+        <groupId>org.springframework.grpc</groupId>
+        <artifactId>spring-grpc-dependencies</artifactId>
+        <version>${spring-grpc.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- Align all gRPC Java dependencies -->
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-bom</artifactId>
+        <version>${grpc.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- Align all Protocol Buffers dependencies -->
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-bom</artifactId>
+        <version>${protobuf.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-bom</artifactId>
+        <version>${resilience4j.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.nimbusds</groupId>
+        <artifactId>nimbus-jose-jwt</artifactId>
+        <version>${nimbus-jose.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.htv</groupId>
+        <artifactId>security-commons</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.htv</groupId>
+        <artifactId>proto-contracts</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.htv</groupId>
+        <artifactId>grpc-commons</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- Protobuf and gRPC code generation -->
+        <plugin>
+          <groupId>io.github.ascopes</groupId>
+          <artifactId>protobuf-maven-plugin</artifactId>
+          <version>${protobuf-maven-plugin.version}</version>
+        </plugin>
+
+        <!-- Explicit Java 17 compilation -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+          <configuration>
+            <release>${maven.compiler.release}</release>
+            <parameters>true</parameters>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

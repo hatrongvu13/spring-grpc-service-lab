@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package servicelab.telemetry.v1;
+
+import "google/protobuf/timestamp.proto";
+import "servicelab/common/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.htv.proto.telemetry.v1";
+
+service TelemetryService {
+  rpc PushLocation(stream LocationSample) returns (PushLocationSummary);
+
+  rpc WatchVehicle(WatchVehicleRequest) returns (stream LocationSample);
+}
+
+message LocationSample {
+  string vehicle_id = 1;
+  servicelab.common.v1.GeoPoint point = 2;
+  google.protobuf.Timestamp recorded_at = 3;
+  double speed_kph = 4;
+}
+
+message PushLocationSummary {
+  int64 accepted = 1;
+  int64 rejected = 2;
+}
+
+message WatchVehicleRequest {
+  string vehicle_id = 1;
+}

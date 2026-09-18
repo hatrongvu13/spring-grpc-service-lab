@@ -1,0 +1,3 @@
+com.htv.commons.security.autoconfigure.ServiceLabSecurityAutoConfiguration
+com.htv.commons.security.autoconfigure.ServiceLabJwtDecoderAutoConfiguration
+com.htv.commons.security.autoconfigure.ServiceLabTokenIssuerAutoConfiguration

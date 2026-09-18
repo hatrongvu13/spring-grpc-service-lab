@@ -1,0 +1,103 @@
+spring:
+  application:
+    name: dispatch-service
+  datasource:
+    url: jdbc:h2:mem:dispatch;MODE=PostgreSQL
+    username: sa
+    jpa.hibernate.ddl-auto: update
+  grpc:
+    server:
+      enabled: true
+      address: 0.0.0.0
+      port: 9091
+
+      ssl:
+        # Giai đoạn local development dùng plaintext.
+        enabled: false
+
+      shutdown:
+        grace-period: 10s
+
+      keepalive:
+        time: 30s
+        timeout: 10s
+
+    client:
+      channel:
+        pricing:
+          target: static://localhost:9092
+
+          ssl:
+            enabled: false
+
+          default:
+            # Dispatch cần kết thúc sớm hơn deadline tổng của gateway.
+            deadline: 1500ms
+
+server:
+  # HTTP port dành cho Actuator.
+  port: 8091
+
+service-lab:
+  grpc:
+    service-name: dispatch-service
+
+  security:
+    enabled: true
+
+    audience: dispatch-service
+
+    trusted-issuers:
+      - edge-gateway
+
+    verification-key-location: classpath:keys/internal-public.pem
+
+    clock-skew: 30s
+    scope-claim: scope
+    service-claim: service_id
+
+    authorization-header: authorization
+    bearer-prefix: "Bearer "
+    maximum-token-length: 8192
+
+    deny-unmapped-methods: true
+    propagate-security-context: true
+
+    # Dispatch vừa là server (verify token của gateway) vừa là client
+    # của pricing, nên nó cũng cần phát internal token cho hop kế tiếp.
+    token-issuer:
+      enabled: true
+
+      issuer: dispatch-service
+      service-id: dispatch-service
+
+      # Dùng chung cặp khóa token trong môi trường local; production
+      # nên cấp khóa riêng cho từng issuer.
+      signing-key-location: ${INTERNAL_TOKEN_PRIVATE_KEY:file:./deploy/certs/gateway-token-key.pem}
+      public-key-location: ${INTERNAL_TOKEN_PUBLIC_KEY:file:./deploy/certs/gateway-token-pub.pem}
+
+      algorithm: RS256
+      key-id: gateway-internal-token-key
+
+      token-lifetime: 2m
+      not-before-skew: 5s
+
+      default-scopes:
+        - pricing:quote
+        - ping:execute
+
+    public-services:
+      - grpc.health.v1.Health
+
+    authorization:
+      "[servicelab.ping.v1.PingService/Ping]":
+        - ping:execute
+
+      "[servicelab.dispatch.v1.DispatchService/CreateDelivery]":
+        - delivery:create
+
+      "[servicelab.dispatch.v1.DispatchService/WatchDelivery]":
+        - delivery:read
+
+      "[servicelab.dispatch.v1.DispatchService/DispatchChannel]":
+        - dispatch:channel

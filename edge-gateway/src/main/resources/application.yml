@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: edge-gateway
+
+  grpc:
+    server:
+      # Gateway chỉ cung cấp REST/WebFlux ra ngoài,
+      # không cung cấp gRPC server.
+      enabled: false
+
+    client:
+      channel:
+        dispatch:
+          target: static://localhost:9091
+
+          # Spring Boot 4.1 không còn negotiation-type.
+          # Tạm thời dùng plaintext trong môi trường local.
+          ssl:
+            enabled: false
+
+          default:
+            # Deadline mặc định cho các call qua channel dispatch.
+            deadline: 2s
+
+server:
+  port: 8080
+
+service-lab:
+  security:
+    # Gateway không cung cấp gRPC server cần xác minh token.
+    enabled: false
+
+    token-issuer:
+      # Nhưng gateway có quyền phát token cho downstream.
+      enabled: true
+
+      issuer: edge-gateway
+      service-id: edge-gateway
+
+      signing-key-location: ${INTERNAL_TOKEN_PRIVATE_KEY:file:./deploy/certs/gateway-token-key.pem}
+
+      public-key-location: ${INTERNAL_TOKEN_PUBLIC_KEY:file:./deploy/certs/gateway-token-pub.pem}
+
+      algorithm: RS256
+      key-id: gateway-internal-token-key
+
+      token-lifetime: 2m
+      not-before-skew: 5s
+
+      default-scopes:
+        - ping:execute
+        - delivery:create
+        - delivery:read
+        - dispatch:channel
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - prometheus
+
+  endpoint:
+    health:
+      show-details: always

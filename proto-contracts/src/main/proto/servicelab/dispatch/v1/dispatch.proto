@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package servicelab.dispatch.v1;
+
+import "google/protobuf/timestamp.proto";
+import "servicelab/common/v1/common.proto";
+
+option java_multiple_files = true;
+option java_package = "com.htv.proto.dispatch.v1";
+
+// Tang giua: vua la server cho edge-gateway, vua la client cua
+// PricingService va TelemetryService.
+service DispatchService {
+  rpc CreateDelivery(CreateDeliveryRequest) returns (Delivery);
+  rpc WatchDelivery(WatchDeliveryRequest) returns (stream DeliveryEvent);
+  rpc DispatchChannel(stream DriverMessage) returns (stream DispatchCommand);
+}
+
+enum DeliveryStatus {
+  DELIVERY_STATUS_UNSPECIFIED = 0;
+  DELIVERY_STATUS_PENDING = 1;
+  DELIVERY_STATUS_ASSIGNED = 2;
+  DELIVERY_STATUS_IN_TRANSIT = 3;
+  DELIVERY_STATUS_DELIVERED = 4;
+  DELIVERY_STATUS_CANCELLED = 5;
+}
+
+message CreateDeliveryRequest {
+  // Bat buoc co tu dau. gRPC tu retry khi gap loi tam thoi,
+  // khong co khoa idempotent se tao trung don.
+  string idempotency_key = 1;
+  servicelab.common.v1.GeoPoint origin = 2;
+  servicelab.common.v1.GeoPoint destination = 3;
+  double weight_kg = 4;
+}
+
+message Delivery {
+  string id = 1;
+  DeliveryStatus status = 2;
+  int64 quoted_amount_minor = 3;
+  string currency = 4;
+  string vehicle_id = 5;
+  google.protobuf.Timestamp created_at = 6;
+  bool price_from_fallback = 7;
+}
+
+message WatchDeliveryRequest {
+  string delivery_id = 1;
+}
+
+message DeliveryEvent {
+  string delivery_id = 1;
+  DeliveryStatus status = 2;
+  servicelab.common.v1.GeoPoint position = 3;
+  google.protobuf.Timestamp occurred_at = 4;
+}
+
+message DriverMessage {
+  oneof payload {
+    DriverHeartbeat heartbeat = 1;
+    JobAck job_ack = 2;
+  }
+}
+
+message DriverHeartbeat {
+  string vehicle_id = 1;
+  servicelab.common.v1.GeoPoint point = 2;
+}
+
+message JobAck {
+  string delivery_id = 1;
+  bool accepted = 2;
+}
+
+message DispatchCommand {
+  oneof payload {
+    AssignJob assign_job = 1;
+    CancelJob cancel_job = 2;
+  }
+}
+
+message AssignJob {
+  string delivery_id = 1;
+  servicelab.common.v1.GeoPoint pickup = 2;
+}
+
+message CancelJob {
+  string delivery_id = 1;
+  string reason = 2;
+}
