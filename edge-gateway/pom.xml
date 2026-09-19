@@ -18,17 +18,14 @@
         <dependency>
             <groupId>com.htv</groupId>
             <artifactId>proto-contracts</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.htv</groupId>
             <artifactId>grpc-commons</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.htv</groupId>
             <artifactId>security-commons</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
