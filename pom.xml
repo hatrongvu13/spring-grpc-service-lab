@@ -25,12 +25,12 @@
 
   <modules>
     <module>proto-contracts</module>
-    <module>telemetry-service</module>
     <module>grpc-commons</module>
     <module>security-commons</module>
+    <module>telemetry-service</module>
+    <module>pricing-service</module>
     <module>dispatch-service</module>
     <module>edge-gateway</module>
-    <module>pricing-service</module>
   </modules>
 
   <properties>
