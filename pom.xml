@@ -49,25 +49,11 @@
     <grpc.version>1.84.0</grpc.version>
     <protobuf.version>4.36.1</protobuf.version>
 
-    <!-- Build plugins -->
-    <protobuf-maven-plugin.version>5.1.9</protobuf-maven-plugin.version>
-    <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
-
     <resilience4j.version>2.4.0</resilience4j.version>
-
-    <nimbus-jose.version>9.40</nimbus-jose.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
-      <!-- Spring gRPC dependency management -->
-      <dependency>
-        <groupId>org.springframework.grpc</groupId>
-        <artifactId>spring-grpc-dependencies</artifactId>
-        <version>${spring-grpc.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
 
       <dependency>
         <groupId>io.github.resilience4j</groupId>
@@ -75,12 +61,6 @@
         <version>${resilience4j.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>com.nimbusds</groupId>
-        <artifactId>nimbus-jose-jwt</artifactId>
-        <version>${nimbus-jose.version}</version>
       </dependency>
 
       <dependency>
@@ -106,12 +86,6 @@
   <build>
     <pluginManagement>
       <plugins>
-        <!-- Protobuf and gRPC code generation -->
-        <plugin>
-          <groupId>io.github.ascopes</groupId>
-          <artifactId>protobuf-maven-plugin</artifactId>
-          <version>${protobuf-maven-plugin.version}</version>
-        </plugin>
 
         <!-- Explicit Java 17 compilation -->
         <plugin>
