@@ -1,6 +1,7 @@
 package com.htv.commons.security.token;
 
 import com.htv.commons.security.key.RsaKeyLoader;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
@@ -9,6 +10,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
@@ -31,20 +34,27 @@ class InternalTokenRoundTripTest {
     private static final String AUDIENCE = "dispatch-service";
     private static final String KEY_ID = "gateway-internal-token-key";
 
+    private static RSAPublicKey publicKey;
+    private static RSAPrivateKey privateKey;
+
+    @BeforeAll
+    static void generateInMemoryKeyPair() throws Exception {
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        KeyPair pair = generator.generateKeyPair();
+        publicKey = (RSAPublicKey) pair.getPublic();
+        privateKey = (RSAPrivateKey) pair.getPrivate();
+    }
+
     private JwtEncoder encoder() {
-        RsaKeyLoader loader = new RsaKeyLoader(new DefaultResourceLoader());
-        RSAPublicKey pub = loader.loadPublicKey("classpath:keys/public-key.pem");
-        RSAPrivateKey priv = loader.loadPrivateKey("classpath:keys/signing-key.pem");
-        return NimbusJwtEncoder.withKeyPair(pub, priv)
+        return NimbusJwtEncoder.withKeyPair(publicKey, privateKey)
                 .algorithm(SignatureAlgorithm.RS256)
                 .jwkPostProcessor(jwk -> jwk.keyID(KEY_ID))
                 .build();
     }
 
     private JwtDecoder decoder() {
-        RsaKeyLoader loader = new RsaKeyLoader(new DefaultResourceLoader());
-        RSAPublicKey pub = loader.loadPublicKey("classpath:keys/public-key.pem");
-        return NimbusJwtDecoder.withPublicKey(pub).build();
+        return NimbusJwtDecoder.withPublicKey(publicKey).build();
     }
 
     private JwtInternalTokenIssuer issuer(JwtEncoder encoder) {

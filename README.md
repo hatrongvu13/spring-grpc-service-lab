@@ -1,4 +1,4 @@
-# FleetPulse
+# Servicelab
 
 Nền tảng điều phối và theo dõi giao hàng thời gian thực trên Spring Boot và gRPC, xây dựng
 theo mô hình **contract-first** với chuỗi gọi phân tầng — nơi một service vừa là server cho
@@ -75,7 +75,7 @@ PostgreSQL · Redis · Micrometer / Prometheus / Grafana · Testcontainers · JU
 ## Tài liệu
 
 - [`ROADMAP.md`](ROADMAP.md) — lộ trình 9 giai đoạn kèm checklist chi tiết
-- [`docs/`](fleetpulse/docs) — kiến trúc, mô hình lỗi, mô hình bảo mật
+- [`docs/`](./docs) — kiến trúc, mô hình lỗi, mô hình bảo mật
 
 ## Giấy phép
 

@@ -1,4 +1,4 @@
-# FleetPulse — Lộ trình triển khai
+# Service Lab — Lộ trình triển khai
 
 Dự án đi từ **chưa có gì** đến một hệ thống gRPC vận hành được, qua 9 giai đoạn. Mỗi giai đoạn
 chạy được end-to-end và demo được; dừng ở bất kỳ giai đoạn nào vẫn có repo hoàn chỉnh.
@@ -85,7 +85,7 @@ giai đoạn làm như vậy.
 ### 1. Ba module chung, ba ranh giới rõ ràng
 
 ```
-proto-contracts     — chỉ hợp đồng. Không import gì của FleetPulse.
+proto-contracts     — chỉ hợp đồng. Không import gì của Service Lab.
 grpc-commons        — cross-cutting kỹ thuật. Phụ thuộc proto-contracts.
 security-commons    — xác thực, phân quyền. Phụ thuộc grpc-commons.
 ```
@@ -96,7 +96,7 @@ làm ba".
 
 ### 2. Module chung nạp qua auto-configuration, không qua component scan
 
-`@SpringBootApplication` của các service **không** quét `io.fleetpulse.commons`. Thay vào đó,
+`@SpringBootApplication` của các service **không** quét `io.htv.commons`. Thay vào đó,
 mỗi module chung có file:
 
 ```
@@ -241,8 +241,8 @@ chain phải có cả hai phía, không chỉ server.
 - [ ] Cấu hình `protobuf-maven-plugin`, xác nhận mã sinh ra trong `target/generated-sources`
 - [ ] `PingNextHop` (interface) + `GrpcPingNextHop` (cài đặt gRPC) + `PingNextHop.none()`
 - [ ] `ChainedPingService` trong `grpc-commons`, đánh dấu `@GrpcService`
-- [ ] `FleetPulseGrpcProperties` với `service-name`, `default-deadline-ms`, `ping.next-hop`
-- [ ] `FleetPulseGrpcAutoConfiguration` + file `AutoConfiguration.imports`
+- [ ] `ServiceLabGrpcProperties` với `service-name`, `default-deadline-ms`, `ping.next-hop`
+- [ ] `ServiceLabGrpcAutoConfiguration` + file `AutoConfiguration.imports`
 - [ ] `CorrelationIdInterceptor` — bọc `ServerCall.Listener` đủ 5 callback
 - [ ] `CorrelationIdClientInterceptor` — đọc từ Context, ghi vào metadata
 - [ ] `DeadlineGuardInterceptor` — deadline mặc định + từ chối sớm
@@ -397,7 +397,7 @@ treo, và cả ba service log cùng một `correlationId`.
 ## GĐ 4 — Module bảo mật dùng chung
 
 ### Mục tiêu
-Bật `fleetpulse.security.enabled: true` và toàn bộ hệ thống chuyển sang mTLS + internal token
+Bật `service-lab.security.enabled: true` và toàn bộ hệ thống chuyển sang mTLS + internal token
 — mà không service nào phải viết code bảo mật.
 
 ### Giải thích
@@ -445,10 +445,10 @@ bị từ chối — vì nó không có quyền đại diện người dùng.
 Khai báo trong `application.yml`:
 
 ```yaml
-fleetpulse.security.authorization:
-  "fleetpulse.ping.v1.PingService/Ping": [PUBLIC]
-  "fleetpulse.dispatch.v1.DispatchService/CreateDelivery": [delivery:write]
-  "fleetpulse.dispatch.v1.DispatchService/WatchDelivery": [delivery:read]
+service-lab.security.authorization:
+  "service-lab.ping.v1.PingService/Ping": [PUBLIC]
+  "service-lab.dispatch.v1.DispatchService/CreateDelivery": [delivery:write]
+  "service-lab.dispatch.v1.DispatchService/WatchDelivery": [delivery:read]
 ```
 
 Một RPC mới chưa khai báo sẽ **bị chặn**. Nếu làm ngược lại (mặc định cho qua), mọi RPC bạn
@@ -468,10 +468,10 @@ thêm sau này đều là lỗ hổng tiềm tàng mà không ai nhận ra cho �
 Mục tiêu thiết kế: **ba dòng**.
 
 ```yaml
-fleetpulse.security:
+service-lab.security:
   enabled: true
   audience: pricing-service
-  verification-key-location: file:/etc/fleetpulse/gateway-token-pub.pem
+  verification-key-location: file:/etc/service-lab/gateway-token-pub.pem
 ```
 
 Mọi thứ khác — interceptor, thứ tự, cách trích SAN, cách kiểm `jti` — nằm trong
@@ -733,7 +733,7 @@ cần hỏi bạn.
 ## GĐ 9 — Cổng GraphQL (dự án kế tiếp)
 
 **Không triển khai trong FleetPulse.** Phần này là bản thiết kế để bạn tách thành một dự án
-portfolio thứ hai, dùng lại `proto-contracts` của FleetPulse làm backend.
+portfolio thứ hai, dùng lại `proto-contracts` của Service lab làm backend.
 
 ### Vì sao tách ra thay vì thêm vào
 
@@ -745,7 +745,7 @@ tự nhiên có một câu chuyện hay: *"tôi xây một cổng GraphQL trên 
 ### Phác thảo kiến trúc
 
 ```
-Web/Mobile ──GraphQL──▶ graphql-gateway ──gRPC──▶ [FleetPulse services]
+Web/Mobile ──GraphQL──▶ graphql-gateway ──gRPC──▶ [Service lab services]
                               │
                               └── schema sinh từ .proto
 ```
