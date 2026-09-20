@@ -18,7 +18,6 @@
         <dependency>
             <groupId>com.htv</groupId>
             <artifactId>proto-contracts</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>

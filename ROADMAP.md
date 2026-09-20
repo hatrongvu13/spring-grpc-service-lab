@@ -220,9 +220,9 @@ mẫu cho toàn bộ triết lý module chung: viết một lần, mọi service
 property duy nhất:
 
 ```yaml
-fleetpulse.grpc.ping.next-hop: pricing    # dispatch → pricing
-fleetpulse.grpc.ping.next-hop: telemetry  # pricing → telemetry
-fleetpulse.grpc.ping.next-hop:            # telemetry là điểm cuối
+servicelab.grpc.ping.next-hop: pricing    # dispatch → pricing
+servicelab.grpc.ping.next-hop: telemetry  # pricing → telemetry
+servicelab.grpc.ping.next-hop:            # telemetry là điểm cuối
 ```
 
 **`CorrelationIdInterceptor` viết đầy đủ ngay từ giai đoạn này** — không phải stub. Lý do: nó
