@@ -1,9 +1,7 @@
 package com.htv.commons.security.token;
 
-import com.htv.commons.security.key.RsaKeyLoader;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -23,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 /**
  * Tái hiện chuỗi phát/xác minh internal token đúng như runtime:
  * edge-gateway ký RS256 rồi dispatch-service xác minh bằng cùng public key.
- *
+ * <p>
  * Mục tiêu: cô lập lỗi UNAUTHENTICATED "Internal token verification failed"
  * xảy ra khi gọi /api/v1/ping.
  */
